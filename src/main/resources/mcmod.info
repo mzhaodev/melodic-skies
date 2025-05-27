@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "Melodic Skies",
-    "description": "A productivity mod for Hypixel Skyblock",
+    "description": "Solvers for Hypixel Skyblock",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://github.com/mzhaodev/melodic-skies",

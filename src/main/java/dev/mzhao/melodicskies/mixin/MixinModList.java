@@ -24,7 +24,8 @@ public class MixinModList {
     private void removeMod(List<ModContainer> modList, CallbackInfo ci) {
         if (Minecraft.getMinecraft().isIntegratedServerRunning()) return;
         if (modTags.remove(ModConstants.MOD_ID) == null) {
-            throw new RuntimeException("Cannot find modid.");
+            // If another mod is removing it, comment this out
+            throw new RuntimeException("Cannot find modid " + ModConstants.MOD_ID);
         }
     }
 }
