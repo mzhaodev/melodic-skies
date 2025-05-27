@@ -6,7 +6,17 @@ Melodic Skies is a collection of solvers for Hypixel Skyblock.
 
 ## Installation
 
-It is currently as a Minecraft Forge 1.8.9 mod.
+Currently only Forge 1.8.9 is supported. You can download a release, or build the code manually.
+
+### Download
+Download the latest jar from [Releases](https://github.com/mzhaodev/melodic-skies/releases).
+
+### Building manually
+Make sure your default Java is `17` or above. At the project root, run:
+```shell
+./gradlew build
+```
+Use the jar at `build/libs/melodicskies-<version>.jar`.
 
 ## License
 

@@ -31,6 +31,7 @@ public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INe
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Packet<? extends INetHandler>> void unregister(Class<T> packetType, Consumer<T> lambda) {
         synchronized (callbacks) {
             callbacks.getOrDefault(packetType, ObjectSets.EMPTY_SET).remove(lambda);
@@ -38,6 +39,7 @@ public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INe
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void channelRead0(ChannelHandlerContext context, Packet packet) {
         Class<?> currentClass = packet.getClass();
         while (currentClass != Packet.class) {
@@ -45,7 +47,7 @@ public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INe
                 var callbackArray = callbacks.get(currentClass);
                 if (callbackArray != null && !callbackArray.isEmpty())
                     for (var lambda : callbackArray)
-                        ((Consumer<Packet>) lambda).accept(packet);
+                        ((Consumer) lambda).accept(packet);
             }
             currentClass = currentClass.getSuperclass();
         }
