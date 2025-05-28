@@ -2,9 +2,9 @@ package dev.mzhao.melodicskies.commands;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.var;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -13,16 +13,16 @@ import net.minecraft.util.BlockPos;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserCommandHandler extends CommandBase {
     public static final UserCommandHandler instance = new UserCommandHandler();
 
-    Object2ObjectMap<String, ObjectObjectImmutablePair<BiConsumer<String[], Object>, Object>> subcommands = new Object2ObjectOpenHashMap<>();
+    Object2ObjectMap<String, Consumer<String[]>> subcommands = new Object2ObjectOpenHashMap<>();
 
-    public void registerSubcommand(String subcommand, BiConsumer<String[], Object> lambda, Object capture) {
-        if (subcommands.put(subcommand, ObjectObjectImmutablePair.of(lambda, capture)) != null) {
+    public void registerSubcommand(String subcommand, Consumer<String[]> lambda) {
+        if (subcommands.put(subcommand, lambda) != null) {
             throw new IllegalArgumentException("Duplicate subcommands not allowed. This indicates a bug.");
         }
     }
@@ -39,10 +39,10 @@ public class UserCommandHandler extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        ObjectObjectImmutablePair<BiConsumer<String[], Object>, Object> subcommand = subcommands.get(args[0]);
+        var subcommand = subcommands.get(args[0]);
         if (subcommand == null)
             throw new IllegalArgumentException("Subcommand " + args[0] + " not found.");
-        subcommand.first().accept(args, subcommand.second());
+        subcommand.accept(args);
     }
 
     @Override

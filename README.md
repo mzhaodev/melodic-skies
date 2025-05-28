@@ -21,3 +21,7 @@ Use the jar at `build/libs/melodicskies-<version>.jar`.
 ## License
 
 This project is licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+# Acknowledgments
+
+This project uses neo89o's [Forge1.8.9Template](https://github.com/nea89o/Forge1.8.9Template).
