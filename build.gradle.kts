@@ -90,7 +90,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")
 
-    implementation("it.unimi.dsi:fastutil:8.5.12")
+    shadowImpl("it.unimi.dsi:fastutil:8.5.12")
 }
 
 // Tasks:

@@ -1,6 +1,7 @@
 package dev.mzhao.melodicskies.controllers;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -13,6 +14,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContainerController {
     public static ContainerController instance = new ContainerController();
+
+    // Minecraft special numbers
+    private static final int slotWidth = 16;
 
     @NonNull
     volatile ContainerType containerType = ContainerType.NONE;
@@ -31,10 +35,17 @@ public class ContainerController {
     }
 
     public void moveSlotToCenter(Slot slot) {
-        // TODO implement
+        int centerX = containerType.xSize / 2;
+        int centerY = containerType.ySize / 2;
+        this.offsetX = centerX - slot.xDisplayPosition;
+        this.offsetY = centerY - slot.yDisplayPosition;
     }
 }
 
+@AllArgsConstructor
 enum ContainerType {
-    NONE, CHEST
+    NONE(0, 0),
+    CHEST(176, 166);
+    final int xSize;
+    final int ySize;
 }

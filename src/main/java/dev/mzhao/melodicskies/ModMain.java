@@ -20,7 +20,9 @@ public class ModMain {
         MinecraftForge.EVENT_BUS.register(ContainerController.instance);
 
         // register modules
-        MinecraftForge.EVENT_BUS.register(TerminalCorrectAllPanesSolver.instance);
+        if (ModConfig.ENABLE_TERMINALS_HELPER) {
+            MinecraftForge.EVENT_BUS.register(TerminalCorrectAllPanesSolver.instance);
+        }
 
         // register command handler
         ClientCommandHandler.instance.registerCommand(UserCommandHandler.instance);

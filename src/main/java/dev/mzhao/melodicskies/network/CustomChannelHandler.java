@@ -6,7 +6,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
-import it.unimi.dsi.fastutil.objects.ObjectSets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,16 +25,14 @@ public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INe
             ObjectSet<Consumer<? extends Packet<? extends INetHandler>>>> callbacks = new Object2ObjectOpenHashMap<>();
 
     public <T extends Packet<? extends INetHandler>> void register(Class<T> packetType, Consumer<T> lambda) {
-        synchronized (callbacks) {
-            callbacks.computeIfAbsent(packetType, type -> new ObjectOpenHashSet<>()).add(lambda);
-        }
+        log.info("Registering callback ({}, {})", packetType, lambda);
+        callbacks.computeIfAbsent(packetType, type -> new ObjectOpenHashSet<>()).add(lambda);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Packet<? extends INetHandler>> void unregister(Class<T> packetType, Consumer<T> lambda) {
-        synchronized (callbacks) {
-            callbacks.getOrDefault(packetType, ObjectSets.EMPTY_SET).remove(lambda);
-        }
+        log.info("Unregistering callback ({}, {})", packetType, lambda);
+        callbacks.get(packetType).remove(lambda);
     }
 
     @Override
@@ -43,12 +40,10 @@ public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INe
     protected void channelRead0(ChannelHandlerContext context, Packet packet) {
         Class<?> currentClass = packet.getClass();
         while (currentClass != Packet.class) {
-            synchronized (callbacks) {
-                var callbackArray = callbacks.get(currentClass);
-                if (callbackArray != null && !callbackArray.isEmpty())
-                    for (var lambda : callbackArray)
-                        ((Consumer) lambda).accept(packet);
-            }
+            var callbackArray = callbacks.get(currentClass);
+            if (callbackArray != null && !callbackArray.isEmpty())
+                for (var lambda : callbackArray)
+                    ((Consumer) lambda).accept(packet);
             currentClass = currentClass.getSuperclass();
         }
         context.fireChannelRead(packet); // propagate packet
