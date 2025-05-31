@@ -2,7 +2,6 @@ package dev.mzhao.melodicskies.modules.dungeons.terminals;
 
 import dev.mzhao.melodicskies.controllers.ContainerController;
 import dev.mzhao.melodicskies.mixin.AccessorGuiChest;
-import dev.mzhao.melodicskies.network.CustomChannelHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,19 +40,20 @@ public class TerminalCorrectAllPanesSolver {
         if (event.gui instanceof GuiChest) {
             GuiChest chest = (GuiChest) event.gui;
             AccessorGuiChest accessorChest = (AccessorGuiChest) chest;
-            if (accessorChest.getLowerChestInventory_melodicskies().getDisplayName().getUnformattedText().equals(DETECTION_TEXT)) {
-                enableCorrectAllPanesSolver(chest);
+            if (accessorChest.getLowerChestInventory_melodicskies().getDisplayName().getUnformattedText()
+                    .equals(DETECTION_TEXT)) {
+                enableCorrectAllPanesSolver();
                 adjustContainerPosition();
             }
         } else if (event.gui == null && slotHandler != null) {
-            CustomChannelHandler.instance.unregister(S2FPacketSetSlot.class, slotHandler);
+//            CustomChannelHandler.instance.unregister(S2FPacketSetSlot.class, slotHandler);
             slotHandler = null;
         }
     }
 
-    private void enableCorrectAllPanesSolver(GuiChest guiChest) {
+    private void enableCorrectAllPanesSolver() {
         this.slotHandler = packet -> adjustContainerPosition();
-        CustomChannelHandler.instance.register(S2FPacketSetSlot.class, slotHandler);
+//        CustomChannelHandler.instance.register(S2FPacketSetSlot.class, slotHandler);
     }
 
     private void adjustContainerPosition() {
@@ -68,7 +68,7 @@ public class TerminalCorrectAllPanesSolver {
             if (item instanceof ItemBlock
                     && ((ItemBlock) item).getBlock() instanceof BlockStainedGlassPane
                     && itemStack.getMetadata() == EnumDyeColor.RED.getMetadata()) {
-                ContainerController.instance.moveSlotToCenter(containerChest.getSlot(i));
+                ContainerController.instance.moveSlotToMouse(containerChest.getSlot(i));
                 return;
             }
         }
