@@ -4,6 +4,7 @@ import dev.mzhao.melodicskies.commands.UserCommandHandler;
 import dev.mzhao.melodicskies.controllers.ContainerController;
 import dev.mzhao.melodicskies.events.EventsHandler;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalChangeAllToSameColorSolver;
+import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalClickInOrderSolver;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalCorrectAllPanesSolver;
 import dev.mzhao.melodicskies.network.ClientConnectedToServerEventHandler;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -27,6 +28,7 @@ public class ModMain {
         if (ModConfig.ENABLE_TERMINALS_HELPER) {
             MinecraftForge.EVENT_BUS.register(TerminalCorrectAllPanesSolver.instance);
             MinecraftForge.EVENT_BUS.register(TerminalChangeAllToSameColorSolver.instance);
+            MinecraftForge.EVENT_BUS.register(TerminalClickInOrderSolver.instance);
         }
     }
 }
