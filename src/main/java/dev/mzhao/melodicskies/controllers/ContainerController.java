@@ -33,7 +33,7 @@ public class ContainerController {
 
     @SubscribeEvent
     public void onChestOpen(GuiOpenEvent event) {
-        if (event == null) {
+        if (event.gui == null) {
             positionModificationType = PositionModificationType.NONE;
             containerType = ContainerType.NONE;
         } else if (event.gui instanceof GuiChest) {
@@ -58,6 +58,10 @@ public class ContainerController {
         int x = Mouse.getX() * scale.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
         int y = scale.getScaledHeight() - Mouse.getY() * scale.getScaledHeight() / Minecraft.getMinecraft().displayHeight;
         moveSlotToPosition(slot, PositionModificationType.ABSOLUTE, x - 9, y - 9);
+    }
+
+    public void resetOffset() {
+        positionModificationType = PositionModificationType.NONE;
     }
 }
 

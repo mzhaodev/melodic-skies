@@ -2,6 +2,8 @@ package dev.mzhao.melodicskies;
 
 import dev.mzhao.melodicskies.commands.UserCommandHandler;
 import dev.mzhao.melodicskies.controllers.ContainerController;
+import dev.mzhao.melodicskies.events.EventsHandler;
+import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalChangeAllToSameColorSolver;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalCorrectAllPanesSolver;
 import dev.mzhao.melodicskies.network.ClientConnectedToServerEventHandler;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -13,8 +15,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 public class ModMain {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        // register packet handler injector
+        // register handlers
+        ClientCommandHandler.instance.registerCommand(UserCommandHandler.instance);
         MinecraftForge.EVENT_BUS.register(ClientConnectedToServerEventHandler.class);
+        MinecraftForge.EVENT_BUS.register(EventsHandler.instance);
 
         // register controllers
         MinecraftForge.EVENT_BUS.register(ContainerController.instance);
@@ -22,9 +26,7 @@ public class ModMain {
         // register modules
         if (ModConfig.ENABLE_TERMINALS_HELPER) {
             MinecraftForge.EVENT_BUS.register(TerminalCorrectAllPanesSolver.instance);
+            MinecraftForge.EVENT_BUS.register(TerminalChangeAllToSameColorSolver.instance);
         }
-
-        // register command handler
-        ClientCommandHandler.instance.registerCommand(UserCommandHandler.instance);
     }
 }

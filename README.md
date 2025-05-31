@@ -1,8 +1,10 @@
 # Melodic Skies
 
-Melodic Skies is a collection of solvers for Hypixel Skyblock.
+Intelligent autocomplete and action prediction for Hypixel Skyblock.
 
 ## Features
+
++ F7 terminal solvers
 
 ## Installation
 

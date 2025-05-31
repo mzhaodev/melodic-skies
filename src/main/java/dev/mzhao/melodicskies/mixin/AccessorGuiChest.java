@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GuiChest.class)
 public interface AccessorGuiChest {
     @Accessor("upperChestInventory")
-    IInventory getUpperChestInventory_melodicskies();
+    IInventory melodic_skies$getUpperChestInventory();
 
     @Accessor("lowerChestInventory")
-    IInventory getLowerChestInventory_melodicskies();
+    IInventory melodic_skies$getLowerChestInventory();
 }

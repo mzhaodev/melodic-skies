@@ -1,6 +1,7 @@
 package dev.mzhao.melodicskies.modules.dungeons.terminals;
 
 import dev.mzhao.melodicskies.controllers.ContainerController;
+import dev.mzhao.melodicskies.events.EventsHandler;
 import dev.mzhao.melodicskies.mixin.AccessorGuiChest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.network.play.server.S2FPacketSetSlot;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -26,34 +26,40 @@ public class TerminalCorrectAllPanesSolver {
 
     public static TerminalCorrectAllPanesSolver instance = new TerminalCorrectAllPanesSolver();
 
-    private Consumer<S2FPacketSetSlot> slotHandler;
-
-    // for compatibility with odin's simulator
-    @SubscribeEvent
-    public void onTick(TickEvent event) {
-        if (slotHandler != null)
-            adjustContainerPosition();
-    }
+    private boolean isEnabled = false;
+    private Consumer<TickEvent> lambda;
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (event.gui instanceof GuiChest) {
             GuiChest chest = (GuiChest) event.gui;
             AccessorGuiChest accessorChest = (AccessorGuiChest) chest;
-            if (accessorChest.getLowerChestInventory_melodicskies().getDisplayName().getUnformattedText()
-                    .equals(DETECTION_TEXT)) {
-                enableCorrectAllPanesSolver();
-                adjustContainerPosition();
+            boolean shouldActivate = accessorChest.melodic_skies$getLowerChestInventory().getDisplayName().getUnformattedText()
+                    .equals(DETECTION_TEXT);
+            if (isEnabled != shouldActivate) {
+                if (isEnabled)
+                    deactivate();
+                else
+                    activate();
             }
-        } else if (event.gui == null && slotHandler != null) {
-//            CustomChannelHandler.instance.unregister(S2FPacketSetSlot.class, slotHandler);
-            slotHandler = null;
+        } else if (event.gui == null && isEnabled) {
+            deactivate();
         }
     }
 
-    private void enableCorrectAllPanesSolver() {
-        this.slotHandler = packet -> adjustContainerPosition();
-//        CustomChannelHandler.instance.register(S2FPacketSetSlot.class, slotHandler);
+    private void activate() {
+        log.info("Activating Terminal - Correct All Panes solver.");
+        this.isEnabled = true;
+        this.lambda = tick -> adjustContainerPosition();
+        EventsHandler.instance.tickHandlers.add(this.lambda);
+    }
+
+    private void deactivate() {
+        log.info("Deactivating Terminal - Correct All Panes solver.");
+        EventsHandler.instance.tickHandlers.remove(this.lambda);
+        this.lambda = null;
+        isEnabled = false;
+        ContainerController.instance.resetOffset();
     }
 
     private void adjustContainerPosition() {
