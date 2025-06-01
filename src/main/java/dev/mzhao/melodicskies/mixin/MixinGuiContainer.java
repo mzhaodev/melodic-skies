@@ -24,23 +24,28 @@ public class MixinGuiContainer {
     @Unique
     protected int melodic_skies$originalGuiTop;
 
-    @Inject(method = "drawScreen", at = @At("HEAD"))
-    private void preDrawScreen(CallbackInfo ci) {
+    @Inject(method = "initGui", at = @At("RETURN"))
+    private void postInitGui(CallbackInfo ci) {
         this.melodic_skies$originalGuiLeft = this.guiLeft;
         this.melodic_skies$originalGuiTop = this.guiTop;
+    }
+
+    @Inject(method = "drawScreen", at = @At("HEAD"))
+    private void preDrawScreen(CallbackInfo ci) {
         var type = ContainerController.instance.positionModificationType;
         if (type == ContainerController.PositionModificationType.RELATIVE) {
-            guiLeft += ContainerController.instance.offsetX;
-            guiTop += ContainerController.instance.offsetY;
+            this.guiLeft += ContainerController.instance.offsetX;
+            this.guiTop += ContainerController.instance.offsetY;
         } else if (type == ContainerController.PositionModificationType.ABSOLUTE) {
-            guiLeft = ContainerController.instance.offsetX;
-            guiTop = ContainerController.instance.offsetY;
+            this.guiLeft = ContainerController.instance.offsetX;
+            this.guiTop = ContainerController.instance.offsetY;
+        } else if (type == ContainerController.PositionModificationType.NONE) {
+            this.guiLeft = this.melodic_skies$originalGuiLeft;
+            this.guiTop = this.melodic_skies$originalGuiTop;
         }
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void postDrawScreen(CallbackInfo ci) {
-        this.guiLeft = this.melodic_skies$originalGuiLeft;
-        this.guiTop = this.melodic_skies$originalGuiTop;
     }
 }
