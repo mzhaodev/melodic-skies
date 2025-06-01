@@ -6,6 +6,8 @@ import dev.mzhao.melodicskies.events.EventsHandler;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalChangeAllToSameColorSolver;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalClickInOrderSolver;
 import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalCorrectAllPanesSolver;
+import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalSelectAllTheXItemsSolver;
+import dev.mzhao.melodicskies.modules.dungeons.terminals.TerminalWhatStartsWithXSolver;
 import dev.mzhao.melodicskies.network.ClientConnectedToServerEventHandler;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,6 +31,8 @@ public class ModMain {
             MinecraftForge.EVENT_BUS.register(TerminalCorrectAllPanesSolver.instance);
             MinecraftForge.EVENT_BUS.register(TerminalChangeAllToSameColorSolver.instance);
             MinecraftForge.EVENT_BUS.register(TerminalClickInOrderSolver.instance);
+            MinecraftForge.EVENT_BUS.register(TerminalWhatStartsWithXSolver.instance);
+            MinecraftForge.EVENT_BUS.register(TerminalSelectAllTheXItemsSolver.instance);
         }
     }
 }
