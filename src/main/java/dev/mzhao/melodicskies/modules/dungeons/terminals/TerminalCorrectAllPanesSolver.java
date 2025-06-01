@@ -67,6 +67,10 @@ public class TerminalCorrectAllPanesSolver {
         var containerChest = (ContainerChest) chest.inventorySlots;
         var lowerInventory = containerChest.getLowerChestInventory();
         for (int i = 0; i < lowerInventory.getSizeInventory(); ++i) {
+            int row = i / 9;
+            int col = i % 9;
+            if (row == 0 || row == 4 || col <= 1 || col >= 7)
+                continue;
             var itemStack = lowerInventory.getStackInSlot(i);
             if (itemStack == null)
                 continue;

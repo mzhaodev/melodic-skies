@@ -7,24 +7,23 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
-import net.minecraft.block.BlockStainedGlassPane;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TerminalClickInOrderSolver {
-    public static final String DETECTION_TEXT = "Click in order!";
+public class TerminalWhatStartsWithXSolver {
+    public static final Pattern DETECTION_TEXT = Pattern.compile("What starts with: '(.)'?");
 
-    public static TerminalClickInOrderSolver instance = new TerminalClickInOrderSolver();
+    public static TerminalWhatStartsWithXSolver instance = new TerminalWhatStartsWithXSolver();
 
     private boolean isEnabled = false;
     private Consumer<TickEvent> lambda;
@@ -34,62 +33,53 @@ public class TerminalClickInOrderSolver {
         if (event.gui instanceof GuiChest) {
             GuiChest chest = (GuiChest) event.gui;
             AccessorGuiChest accessorChest = (AccessorGuiChest) chest;
-            boolean shouldActivate = accessorChest.melodic_skies$getLowerChestInventory().getDisplayName().getUnformattedText()
-                    .equals(DETECTION_TEXT);
+            String chestTitle = accessorChest.melodic_skies$getLowerChestInventory().getDisplayName().getUnformattedText();
+            Matcher matcher = DETECTION_TEXT.matcher(chestTitle);
+            boolean shouldActivate = matcher.find();
             if (isEnabled != shouldActivate) {
                 if (isEnabled)
                     deactivate();
                 else
-                    activate();
+                    activate(matcher.group(1));
             }
         } else if (event.gui == null && isEnabled) {
             deactivate();
         }
     }
 
-    private void activate() {
-        log.info("Activating Terminal - Click In Order solver.");
+    private void activate(String prefix) {
+        log.info("Activating Terminal - What Starts With '{}' solver.", prefix);
         this.isEnabled = true;
-        this.lambda = tick -> adjustContainerPosition();
+        this.lambda = tick -> adjustContainerPosition(prefix);
         EventsHandler.instance.tickHandlers.add(this.lambda);
     }
 
     private void deactivate() {
-        log.info("Deactivating Terminal - Click In Order solver.");
+        log.info("Deactivating Terminal - What Starts With X solver.");
         EventsHandler.instance.tickHandlers.remove(this.lambda);
         this.lambda = null;
         isEnabled = false;
         ContainerController.instance.resetOffset();
     }
 
-    private void adjustContainerPosition() {
+    private void adjustContainerPosition(String prefix) {
         var chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
         var containerChest = (ContainerChest) chest.inventorySlots;
         var lowerInventory = containerChest.getLowerChestInventory();
-
-        int smallestSlot = 0;
-        int smallestValue = 16;
         for (int i = 0; i < lowerInventory.getSizeInventory(); ++i) {
             int row = i / 9;
             int col = i % 9;
-            if (row == 0 || row == 3 || col == 0 || col == 8)
+            if (row == 0 || row == 4 || col == 0 || col == 8)
                 continue;
             var itemStack = lowerInventory.getStackInSlot(i);
             if (itemStack == null)
                 continue;
-            var item = itemStack.getItem();
-            if (item instanceof ItemBlock
-                    && ((ItemBlock) item).getBlock() instanceof BlockStainedGlassPane
-                    && itemStack.getMetadata() == EnumDyeColor.RED.getMetadata()) {
-                if (itemStack.stackSize < smallestValue) {
-                    smallestValue = itemStack.stackSize;
-                    smallestSlot = i;
-                }
+            if (itemStack.isItemEnchanted())
+                continue;
+            if (itemStack.getDisplayName().startsWith(prefix)) {
+                ContainerController.instance.moveSlotToMouse(containerChest.getSlot(i));
+                return;
             }
-        }
-
-        if (smallestSlot != 0) {
-            ContainerController.instance.moveSlotToMouse(containerChest.getSlot(smallestSlot));
         }
     }
 }

@@ -95,6 +95,10 @@ public class TerminalChangeAllToSameColorSolver {
 
         Int2IntArrayMap colorFreq = new Int2IntArrayMap();
         for (int i = 0; i < lowerInventory.getSizeInventory(); ++i) {
+            int row = i / 9;
+            int col = i % 9;
+            if (row == 0 || row == 4 || col <= 2 || col >= 6)
+                continue;
             var itemStack = lowerInventory.getStackInSlot(i);
             if (itemStack == null)
                 continue;
