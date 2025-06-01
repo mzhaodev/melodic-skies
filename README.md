@@ -2,6 +2,8 @@
 
 Intelligent autocomplete and action prediction for Hypixel Skyblock.
 
+Please disable Patcher Mod's "Inventory Scale" feature.
+
 ## Features
 
 + F7 terminal solvers
@@ -19,6 +21,10 @@ Make sure your default Java is `17` or above. At the project root, run:
 ./gradlew build
 ```
 Use the jar at `build/libs/melodicskies-<version>.jar`.
+
+## Contributing
+
+Contributions welcome! If the change is large, please first open an issue describing the change.
 
 ## License
 
