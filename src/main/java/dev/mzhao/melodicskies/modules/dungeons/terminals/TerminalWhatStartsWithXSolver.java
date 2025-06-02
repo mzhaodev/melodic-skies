@@ -10,6 +10,7 @@ import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -55,7 +56,7 @@ public class TerminalWhatStartsWithXSolver {
     }
 
     private void deactivate() {
-        log.info("Deactivating Terminal - What Starts With X solver.");
+        log.info("Deactivating Terminal - What Starts With 'X' solver.");
         EventsHandler.instance.tickHandlers.remove(this.lambda);
         this.lambda = null;
         isEnabled = false;
@@ -76,7 +77,8 @@ public class TerminalWhatStartsWithXSolver {
                 continue;
             if (itemStack.isItemEnchanted())
                 continue;
-            if (itemStack.getDisplayName().startsWith(prefix)) {
+            if (EnumChatFormatting.getTextWithoutFormattingCodes(itemStack.getDisplayName())
+                    .startsWith(prefix)) {
                 ContainerController.instance.moveSlotToMouse(containerChest.getSlot(i));
                 return;
             }
