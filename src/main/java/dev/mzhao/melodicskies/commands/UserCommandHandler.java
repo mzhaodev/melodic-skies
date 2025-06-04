@@ -1,7 +1,5 @@
 package dev.mzhao.melodicskies.commands;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.var;
@@ -12,6 +10,7 @@ import net.minecraft.util.BlockPos;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -19,7 +18,7 @@ import java.util.function.Consumer;
 public class UserCommandHandler extends CommandBase {
     public static final UserCommandHandler instance = new UserCommandHandler();
 
-    Object2ObjectMap<String, Consumer<String[]>> subcommands = new Object2ObjectOpenHashMap<>();
+    HashMap<String, Consumer<String[]>> subcommands = new HashMap<>();
 
     public void registerSubcommand(String subcommand, Consumer<String[]> lambda) {
         if (subcommands.put(subcommand, lambda) != null) {

@@ -3,9 +3,6 @@ package dev.mzhao.melodicskies.modules.dungeons.terminals;
 import dev.mzhao.melodicskies.controllers.ContainerController;
 import dev.mzhao.melodicskies.events.EventsHandler;
 import dev.mzhao.melodicskies.mixin.AccessorGuiChest;
-import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,21 +17,24 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TerminalChangeAllToSameColorSolver {
     public static final String DETECTION_TEXT = "Change all to same color!";
-    private static final Int2IntMap colors;
+    private static final Map<Integer, Integer> colors;
     static {
-            var colorsMutable = new Int2IntArrayMap();
+            Map<Integer, Integer> colorsMutable = new HashMap<>();
             colorsMutable.put(EnumDyeColor.ORANGE.getMetadata(), 0);
             colorsMutable.put(EnumDyeColor.YELLOW.getMetadata(), 1);
             colorsMutable.put(EnumDyeColor.GREEN.getMetadata(), 2);
             colorsMutable.put(EnumDyeColor.BLUE.getMetadata(), 3);
             colorsMutable.put(EnumDyeColor.RED.getMetadata(), 4);
-            colors = Int2IntMaps.unmodifiable(colorsMutable);
+            colors = Collections.unmodifiableMap(colorsMutable);
     }
 
     public static TerminalChangeAllToSameColorSolver instance = new TerminalChangeAllToSameColorSolver();
@@ -75,15 +75,15 @@ public class TerminalChangeAllToSameColorSolver {
         ContainerController.instance.resetOffset();
     }
 
-    private int countClicksNeeded(Int2IntArrayMap freq, int target) {
+    private int countClicksNeeded(Map<Integer, Integer> freq, int target) {
         int clicks = 0;
-        for (var entry : freq.int2IntEntrySet()) {
-            int ord = colors.get(entry.getIntKey());
+        for (var entry : freq.entrySet()) {
+            int ord = colors.get(entry.getKey());
             int ord2 = colors.get(target);
             int dist = ord2 - ord;
             if (dist < 0)
                 dist += colors.size();
-            clicks += dist * entry.getIntValue();
+            clicks += dist * entry.getValue();
         }
         return clicks;
     }
@@ -93,7 +93,7 @@ public class TerminalChangeAllToSameColorSolver {
         var containerChest = (ContainerChest) chest.inventorySlots;
         var lowerInventory = containerChest.getLowerChestInventory();
 
-        Int2IntArrayMap colorFreq = new Int2IntArrayMap();
+        Map<Integer, Integer> colorFreq = new HashMap<>();
         for (int i = 0; i < lowerInventory.getSizeInventory(); ++i) {
             int row = i / 9;
             int col = i % 9;
@@ -106,17 +106,17 @@ public class TerminalChangeAllToSameColorSolver {
             if (item instanceof ItemBlock
                     && ((ItemBlock) item).getBlock() instanceof BlockStainedGlassPane) {
                 if (colors.containsKey(itemStack.getMetadata())) {
-                    colorFreq.mergeInt(itemStack.getMetadata(), 1, Integer::sum);
+                    colorFreq.merge(itemStack.getMetadata(), 1, Integer::sum);
                 }
             }
         }
 
         int target = 0;
         int targetClicks = Integer.MAX_VALUE;
-        for (var color : colors.int2IntEntrySet()) {
-            int actions = countClicksNeeded(colorFreq, color.getIntKey());
+        for (var color : colors.keySet()) {
+            int actions = countClicksNeeded(colorFreq, color);
             if (actions < targetClicks) {
-                target = color.getIntKey();
+                target = color;
                 targetClicks = actions;
             }
         }

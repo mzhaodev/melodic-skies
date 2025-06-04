@@ -3,9 +3,6 @@ package dev.mzhao.melodicskies.network;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -13,6 +10,9 @@ import lombok.var;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Log4j2
@@ -21,12 +21,12 @@ import java.util.function.Consumer;
 public class CustomChannelHandler extends SimpleChannelInboundHandler<Packet<INetHandler>> {
     public static final CustomChannelHandler instance = new CustomChannelHandler();
 
-    private final Object2ObjectOpenHashMap<Class<? extends Packet<? extends INetHandler>>,
-            ObjectSet<Consumer<? extends Packet<? extends INetHandler>>>> callbacks = new Object2ObjectOpenHashMap<>();
+    private final HashMap<Class<? extends Packet<? extends INetHandler>>,
+                Set<Consumer<? extends Packet<? extends INetHandler>>>> callbacks = new HashMap<>();
 
     public <T extends Packet<? extends INetHandler>> void register(Class<T> packetType, Consumer<T> lambda) {
         log.info("Registering callback ({}, {})", packetType, lambda);
-        callbacks.computeIfAbsent(packetType, type -> new ObjectOpenHashSet<>()).add(lambda);
+        callbacks.computeIfAbsent(packetType, type -> new HashSet<>()).add(lambda);
     }
 
     @SuppressWarnings("unchecked")
